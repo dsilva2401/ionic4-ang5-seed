@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.shellcatch.frescapesca" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Frescapesca</name>
-    <description>Frescapesca App.</description>
-    <author email="support@shellcatch.com" href="http://shellcatch.com/">Shellcatch Team</author>
+<widget id="com.estilosperu.sellersapp" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>Estilos - Vendedores</name>
+    <description>App para vendedores estilos.</description>
+    <author email="support@shellcatch.com" href="http://estilos.com.pe/">Estilos</author>
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
@@ -82,4 +82,5 @@
     <plugin name="cordova-plugin-ionic-webview" spec="^1.1.16" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
     <engine name="android" spec="~7.0.0" />
+    <engine name="ios" spec="~4.5.4" />
 </widget>
