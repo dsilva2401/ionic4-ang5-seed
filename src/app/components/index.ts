@@ -1,10 +1,15 @@
-import { ComponentX } from './ComponentX';
+import { AccessComponent } from './Access';
+import { HomeComponent } from './Home';
 import { ComponentY } from './ComponentY';
 
 export {
-    ComponentX, ComponentY
+    AccessComponent,
+    HomeComponent,
+    ComponentY
 }
 
 export var componentsList: any = [
-    ComponentX, ComponentY
+    AccessComponent,
+    HomeComponent,
+    ComponentY
 ]

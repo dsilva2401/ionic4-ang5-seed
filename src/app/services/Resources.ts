@@ -1,15 +1,23 @@
 import { Injectable, Inject } from '@angular/core';
 import { Http } from '@angular/http';
+import { Observable } from 'rxjs/Rx';
+import { Data } from './Data';
 
 @Injectable()
 export class ResourcesService {
 
     // Attributes
     $http: Http;
+    data: Data;
+    domain: string;
+    sessionid: string;
 
     // Methods
-    constructor ($http: Http) {
+    constructor ($http: Http, data: Data) {
         this.$http = $http;
+        this.data = data;
+        this.domain = 'http://localhost:3000';
+        this.sessionid = this.data.get('sessionId') || '';
     }
 
     private processUrl (url: string, params: any) {
@@ -30,6 +38,7 @@ export class ResourcesService {
     private resolveRequest (data: { url: string, method: string, body?: any, query?: any, urlParams?: any }) {
         data.query = data.query || {};
         var fUrl = this.processUrl(data.url, data.urlParams || {});
+        fUrl = this.domain + fUrl;
         if (data.query && Object.keys(data.query).length) {
             fUrl += '?' + Object.keys(data.query).map((k) => {
                 return k+'='+data.query[k];
@@ -41,4 +50,32 @@ export class ResourcesService {
         });
     }
 
+    public loginUsingEmailPassword (email, password) {
+        return new Observable((observer) => {
+            this.resolveRequest({
+                url: '/auth/login',
+                method: 'POST',
+                body: {
+                    email: email,
+                    password: password,
+                }
+            }).subscribe((resp) => {
+                var data = resp.json();
+                this.sessionid = data._id;
+                this.data.set('sessionId', data._id);
+                observer.next(data);
+                observer.complete();
+            }, (err) => {
+                observer.error(err);
+                observer.complete();
+            });
+        });
+    }
+
+    public getUserInSession () {
+        return this.resolveRequest({
+            method: 'GET',
+            url: '/auth/me'
+        }).map((resp) => { return resp.json(); });
+    }
 }
