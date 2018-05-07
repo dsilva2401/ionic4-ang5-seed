@@ -15,7 +15,7 @@ export class Data {
     }
     
     public get (key: string) {
-        return window.localStorage.getItem(key);
+        return window.localStorage.getItem(key) || '';
     }
     
     public setObject (key: string, obj: any) {
@@ -23,6 +23,7 @@ export class Data {
     }
     
     public getObject (key: string) {
+        if (!this.get(key)) return null;
         return JSON.parse(this.get(key));
     }
 

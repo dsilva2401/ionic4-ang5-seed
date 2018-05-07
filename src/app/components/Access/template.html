@@ -1,7 +1,7 @@
 <div class="access">
     
     <!-- Login -->
-    <div *ngIf="isShowingLogin">
+    <div *ngIf="isShowingLogin" class="container">
         <p>
             <span>Email</span>
             <input type="email">
@@ -19,29 +19,50 @@
     </div>
 
     <!-- Register -->
-    <div *ngIf="isShowingRegister">
-        <p>
-            <span>Name</span>
-            <input type="text">
-        </p>
-        <p>
-            <span>lastname</span>
-            <input type="text">
-        </p>
-        <p>
-            <span>Email</span>
-            <input type="email">
-        </p>
-        <p>
-            <span>Password</span>
-            <input type="password">
-        </p>
-        <p>
-            <button>Register</button>
-        </p>
-        <p>
-            <button (click)="showLogin()">Already registered?</button>
-        </p>
+    <div *ngIf="isShowingRegister" class="container">
+
+        <div>
+            <h3>Basic information</h3>
+            <p>
+                <span>Name</span>
+                <input type="text">
+            </p>
+            <p>
+                <span>lastname</span>
+                <input type="text">
+            </p>
+            <p>
+                <span>Email</span>
+                <input type="email">
+            </p>
+            <p>
+                <span>Password</span>
+                <input type="password">
+            </p>
+        </div>
+
+        <div>
+            <h3>Legal information</h3>
+            <p>
+                <span>Select your country</span>
+                <select>
+                    <option value="countryidx">Country X</option>
+                    <option value="countryidy">Country Y</option>
+                    <option value="countryidz">Country Z</option>
+                </select>
+            </p>
+        </div>
+
+        <div>
+            <p>
+                <button>Register</button>
+            </p>
+        </div>
+        <div>
+            <p>
+                <button (click)="showLogin()">Already registered?</button>
+            </p>
+        </div>
     </div>
     
 </div>

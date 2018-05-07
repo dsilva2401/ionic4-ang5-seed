@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Response, Request } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Data } from './Data';
 
@@ -50,6 +50,78 @@ export class ResourcesService {
         });
     }
 
+    private setResponseInCache (reqData: {url: string, method: string}, data) {
+        var key = 'resp-' + this.sessionid + '-' + reqData.method + '-' + reqData.url;
+        this.data.setObject(key, data);
+    }
+    
+    private getResponseFromCache (reqData: {url: string, method: string}) {
+        var key = 'resp-' + this.sessionid + '-' + reqData.method + '-' + reqData.url;
+        return (this.data.getObject(key) || {
+            status: -1,
+            body: {}
+        });
+    }
+
+    private setRequestToPendingList (reqData) {
+        var key = 'req-' + this.sessionid + '-' + reqData.method + '-' + reqData.url;
+        var currentList = this.data.getObject(key) || [];
+        currentList.push(reqData);
+        this.data.setObject(key, currentList);
+    }
+
+    private getRequestsPendingList (reqData) {
+        var key = 'req-' + this.sessionid + '-' + reqData.method + '-' + reqData.url;
+        return this.data.getObject(key) || [];
+    }
+
+    private ensureRequestIsSolved (data: { url: string, method: string, body?: any, query?: any, urlParams?: any }) {
+        return new Observable((observer) => {
+            // App is online
+            if (navigator.onLine) {
+                this.resolveRequest(data).subscribe((resp) => {
+                    if (data.method.toLowerCase() == 'get') {
+                        this.setResponseInCache({
+                            method: data.method,
+                            url: data.url,
+                        }, resp);
+                    }
+                    observer.next(resp);
+                    observer.complete();
+                }, (resp) => {
+                    observer.error(resp);
+                    observer.complete();
+                });
+                return;
+            }
+            // App is offline
+            if (data.method.toLowerCase() == 'get') {
+                var resp = this.getResponseFromCache({
+                    method: data.method,
+                    url: data.url,
+                });
+                resp.json = () => {
+                    return resp.body
+                }
+                if (Math.floor(resp.status / 100) == 2) {
+                    observer.next(resp);
+                    observer.complete();
+                    return;
+                }
+                observer.error(resp);
+                observer.complete();
+                return;
+            }
+            this.setRequestToPendingList(data);
+            observer.next({
+                status: 100,
+                body: {},
+                json: () => { return {}; }
+            });
+            observer.complete();
+        });
+    }
+
     public loginUsingEmailPassword (email, password) {
         return new Observable((observer) => {
             this.resolveRequest({
@@ -73,9 +145,9 @@ export class ResourcesService {
     }
 
     public getUserInSession () {
-        return this.resolveRequest({
+        return this.ensureRequestIsSolved({
             method: 'GET',
             url: '/auth/me'
-        }).map((resp) => { return resp.json(); });
+        }).map((resp: any) => { return resp.json(); });
     }
 }
