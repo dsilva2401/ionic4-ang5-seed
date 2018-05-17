@@ -37,6 +37,9 @@ export class ResourcesService {
 
     private resolveRequest (data: { url: string, method: string, body?: any, query?: any, urlParams?: any }) {
         data.query = data.query || {};
+        if (this.sessionid) {
+            data.query['_sid_'] = this.sessionid;
+        }
         var fUrl = this.processUrl(data.url, data.urlParams || {});
         fUrl = this.domain + fUrl;
         if (data.query && Object.keys(data.query).length) {
@@ -57,10 +60,14 @@ export class ResourcesService {
     
     private getResponseFromCache (reqData: {url: string, method: string}) {
         var key = 'resp-' + this.sessionid + '-' + reqData.method + '-' + reqData.url;
-        return (this.data.getObject(key) || {
+        var resp = (this.data.getObject(key) || {
             status: -1,
             body: {}
         });
+        if (resp._body) {
+            resp.body = JSON.parse(resp._body);
+        }
+        return resp;
     }
 
     private setRequestToPendingList (reqData) {
@@ -137,8 +144,8 @@ export class ResourcesService {
                 this.data.set('sessionId', data._id);
                 observer.next(data);
                 observer.complete();
-            }, (err) => {
-                observer.error(err);
+            }, (resp) => {
+                observer.error(resp);
                 observer.complete();
             });
         });
